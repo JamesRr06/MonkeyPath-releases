@@ -3,20 +3,104 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Monkey Path</title>
+<meta name="theme-color" content="#1d3a2a">
+<title>Monkey Path — Alpha</title>
+<link rel="icon" href="img/icon_banane.svg" type="image/svg+xml">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<main>
-<h1>Monkey Path</h1>
-<ul>
-<li><a href="fr/">Politique de confidentialité (français)</a></li>
-<li><a href="en/">Privacy policy (English)</a></li>
-<li><a href="fr/conditions.html">Conditions d'utilisation de l'alpha (français)</a></li>
-<li><a href="en/conditions.html">Alpha terms of use (English)</a></li>
-<li><a href="fr/installation.html">Installer l'alpha (français)</a></li>
-<li><a href="en/installation.html">Installing the alpha (English)</a></li>
-</ul>
+<main class="accueil">
+<p class="langue"><a href="en/installation.html">English</a></p>
+
+<div class="logo">
+<h1>Monkey<br>Path</h1>
+<img src="img/icon_banane.svg" alt="">
+</div>
+<p class="badge">Alpha fermée · Android</p>
+<p class="accroche">Merci de tester Monkey Path ! Une version de test, donnée <strong>en l'état</strong> à un petit groupe de testeurs de <strong>15 ans et plus</strong>. Pas de Google Play : tu installes l'APK à la main.</p>
+
+<a class="bouton geant telecharger" href="https://github.com/JamesRr06/MonkeyPath-releases/releases/latest/download/monkey-path-release.apk">Télécharger l'APK</a>
+<p class="version" id="version">Toujours la dernière version.</p>
+
+<section class="panneau" aria-labelledby="titre-quete">
+<div class="entete">
+<h2 id="titre-quete">Quête : rejoindre la jungle</h2>
+<span class="compteur" id="compteur">0 / 4</span>
+</div>
+<div class="barre" aria-hidden="true"><span id="barre"></span></div>
+<ol class="quete" id="quete">
+<li><button type="button" aria-pressed="false"><span class="medaille">1</span><span><b>Télécharger l'APK</b><small>Sur ton téléphone Android, touche le bouton doré ci-dessus.</small></span></button></li>
+<li><button type="button" aria-pressed="false"><span class="medaille">2</span><span><b>Autoriser l'installation</b><small>Ouvre le fichier. Si Android le demande, autorise cette source (« installer des applications inconnues »).</small></span></button></li>
+<li><button type="button" aria-pressed="false"><span class="medaille">3</span><span><b>Installer et lancer</b><small>Valide l'installation, puis lance Monkey Path. Le jeu te demande si tu acceptes le journal de l'alpha : tu peux refuser.</small></span></button></li>
+<li><button type="button" aria-pressed="false"><span class="medaille">4</span><span><b>Envoyer tes retours</b><small>Dans le canal de l'alpha (Discord ou WhatsApp) qui t'a été indiqué à ton inscription.</small></span></button></li>
+</ol>
+<p class="recompense" id="recompense"><strong>Quête accomplie !</strong> Pour une nouvelle version, installe-la <strong>par-dessus</strong>, sans désinstaller : ta progression est gardée.</p>
+<p class="maj">Touche une étape quand elle est faite. Le pas-à-pas complet : <a href="fr/installation.html">page d'installation</a>.</p>
+</section>
+
+<section class="panneau" aria-labelledby="titre-singes">
+<h2 id="titre-singes">Les singes de l'alpha</h2>
+<div class="singes">
+<div class="singe"><img src="img/portrait_gorille.svg" alt=""><b>Gorille</b><small>Massue</small></div>
+<div class="singe"><img src="img/portrait_capucin.svg" alt=""><b>Capucin</b><small>Fronde</small></div>
+<div class="singe"><img src="img/portrait_mandrill.svg" alt=""><b>Mandrill</b><small>Orbe</small></div>
+</div>
+</section>
+
+<nav class="liens" aria-label="Pages de l'alpha">
+<a class="bouton secondaire" href="fr/installation.html">Installation</a>
+<a class="bouton secondaire" href="fr/conditions.html">Conditions</a>
+<a class="bouton secondaire" href="fr/">Confidentialité</a>
+</nav>
+<p class="pied">English: <a href="en/installation.html">installing the alpha</a> · <a href="en/conditions.html">terms of use</a> · <a href="en/">privacy policy</a><br>
+<a href="https://github.com/JamesRr06/MonkeyPath-releases/releases">Toutes les versions</a></p>
 </main>
+<script>
+// La quête se coche sur le téléphone du testeur seulement (rien n'est envoyé).
+(function () {
+  var cle = "monkeypath-quete";
+  var boutons = document.querySelectorAll("#quete button");
+  var faites = [];
+  try { faites = JSON.parse(localStorage.getItem(cle)) || []; } catch (e) { faites = []; }
+  function afficher() {
+    var n = 0;
+    boutons.forEach(function (b, i) {
+      var f = faites.indexOf(i) >= 0;
+      b.parentNode.classList.toggle("faite", f);
+      b.setAttribute("aria-pressed", f ? "true" : "false");
+      b.querySelector(".medaille").textContent = f ? "✓" : String(i + 1);
+      if (f) n++;
+    });
+    document.getElementById("compteur").textContent = n + " / " + boutons.length;
+    document.getElementById("barre").style.width = (100 * n / boutons.length) + "%";
+    document.getElementById("recompense").classList.toggle("visible", n === boutons.length);
+  }
+  boutons.forEach(function (b, i) {
+    b.addEventListener("click", function () {
+      var k = faites.indexOf(i);
+      if (k >= 0) faites.splice(k, 1); else faites.push(i);
+      try { localStorage.setItem(cle, JSON.stringify(faites)); } catch (e) {}
+      afficher();
+    });
+  });
+  document.querySelector(".telecharger").addEventListener("click", function () {
+    if (faites.indexOf(0) < 0) { faites.push(0); try { localStorage.setItem(cle, JSON.stringify(faites)); } catch (e) {} afficher(); }
+  });
+  afficher();
+
+  // Numéro et taille de la dernière version, lus sur GitHub (qui sert aussi l'APK).
+  fetch("https://api.github.com/repos/JamesRr06/MonkeyPath-releases/releases/latest")
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (rel) {
+      if (!rel) return;
+      var apk = (rel.assets || []).filter(function (a) { return a.name === "monkey-path-release.apk"; })[0];
+      var date = new Date(rel.published_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+      var texte = "Version <b>" + rel.tag_name.replace(/[^\w.\-]/g, "") + "</b> du " + date;
+      if (apk) texte += " · " + Math.round(apk.size / 1048576) + " Mo";
+      document.getElementById("version").innerHTML = texte;
+    })
+    .catch(function () {});
+})();
+</script>
 </body>
 </html>
